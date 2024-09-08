@@ -7,10 +7,9 @@ import {
   SearchRequestQuery,
 } from "../types/types.js";
 import ErrorHandler from "../utils/utility-class.js";
-import { rm } from "fs";
 import { myCache } from "../app.js";
 import { invalidateCache, uploadToCloudinary, deleteFromCloudinary } from "../utils/features.js";
-import { v2 as cloudinary } from "cloudinary";
+import mongoose from "mongoose";
 
 // Re validate on New, Update, Delete Product & on New Order
 export const getlatestProducts = TryCatch(async (req, res, next) => {
@@ -135,7 +134,7 @@ export const updateProduct = TryCatch(async (req, res, next) => {
 
     await deleteFromCloudinary(ids);
 
-    product.photos = photosURL;
+    product.photos = photosURL as unknown as mongoose.Types.DocumentArray<{ public_id: string; url: string }>;
   }
 
   if (name) product.name = name;
