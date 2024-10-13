@@ -1,7 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express'
 import { connectDB, connectRedis } from './utils/features.js'
 import { errorMiddleware } from './middlewares/error.js'
-import NodeCache from 'node-cache'
 import {config} from 'dotenv'
 import morgan from 'morgan'
 import Stripe from 'stripe'
@@ -37,15 +36,14 @@ cloudinary.config({
   
 export const stripe = new Stripe(stripeKey)
 
-export const myCache = new NodeCache()
 const app = express()
 app.use(express.json())
 app.use(morgan("dev"))
 app.use(cors({
-    origin: [process.env.CLIENT_URL!],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  }))
+  origin: [process.env.CLIENT_URL!],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+}))
 app.get("/", (req,res) => {
     res.send("API working with /api/v1")
 })

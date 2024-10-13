@@ -1,11 +1,29 @@
-import mongoose, { Document } from "mongoose";
-import { InvalidateCacheProps, OrderItemType } from "../types/types.js";
-import { Product } from "../models/product.js";
-import { myCache } from "../app.js";
-import { Order } from "../models/order.js";
 import { UploadApiResponse, v2 as cloudinary } from "cloudinary";
 import { Redis } from "ioredis";
+import mongoose, { Document } from "mongoose";
 import { redis } from "../app.js";
+import { Product } from "../models/product.js";
+import { InvalidateCacheProps, OrderItemType } from "../types/types.js";
+import { Review } from "../models/review.js";
+
+export const findAverageRatings = async(productId: mongoose.Types.ObjectId) => {
+  let totalRating = 0;
+
+    const reviews = await Review.find({product: productId})
+
+    reviews.forEach((review) => {
+      totalRating += review.rating
+    })
+
+    const averageRating = Math.floor(totalRating / reviews.length) || 0;
+
+    return {
+      numOfReviews: reviews.length,
+      ratings: averageRating
+    }
+}
+
+
 
 export const connectDB = (uri: string) => {
   mongoose
@@ -18,10 +36,18 @@ export const invalidateCache = async ({
   product,
   order,
   admin,
+  review,
   userId,
   orderId,
   productId,
 }: InvalidateCacheProps) => {
+
+  if(review) {
+
+    await redis.del([`reviews-${productId}`])
+  }
+
+
   if (product) {
     const productKeys: string[] = [
       "latest-products",

@@ -4,7 +4,6 @@ import { NewOrderRequestBody } from "../types/types.js";
 import { Order } from "../models/order.js";
 import { invalidateCache, reduceStock } from "../utils/features.js";
 import ErrorHandler from "../utils/utility-class.js";
-import { myCache } from "../app.js";
 import { redis, redisTTL } from "../app.js";
 
 export const newOrder = TryCatch(
